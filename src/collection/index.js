@@ -125,10 +125,13 @@ elesfn.spawn = function( cy, eles, opts ){
     cy = this.cy();
   }
 
-  let flatten = cy.collection();
+  // let flatten = cy.collection();
+  let flatten = [];
   if (eles && eles.length > 0 && eles[0].group() === 'nodes') {
-    eles.forEach(b => flatten.merge(b));
-    eles =  flatten.toArray() ;
+    // eles.forEach(b => flatten.merge(b));
+    eles = eles.reduce((acc, val) => acc.concat(val), []);
+    // eles = eles.flat();
+    // eles =  flatten.toArray() ;
   }
 
   return new Collection( cy, eles, opts );
@@ -486,15 +489,17 @@ elesfn.restore = function( notifyRenderer = true, addToPool = true ){
 
       let specifiedParent = parentId != null;
       if (specifiedParent) {
+
         let parent = cy.getElementById(parentId);
 
         if (parent.empty()) {
           // non-existant parent; just remove it
           data.parent = undefined;
         } else {
+          parent = [parent];
           let selfAsParent = false;
           let ancestor = parent;
-          while (!ancestor.empty()) {
+          while (!ancestor[0].empty()) {
             if (node.same(ancestor)) {
               // mark self as parent and remove from data
               selfAsParent = true;
@@ -504,18 +509,20 @@ elesfn.restore = function( notifyRenderer = true, addToPool = true ){
               break;
             }
 
-            ancestor = ancestor.parent();
+            ancestor = ancestor[0].parent();
           }
 
           if (!selfAsParent) {
             // connect with children
             parent[0]._private.children.push(node);
             if (!node._private.parent) {
-              node._private.parent = cy.collection().merge(parent[0]);
-              console.dir(node._private.parent);
+              // node._private.parent = cy.collection().merge(parent[0]);
+              node._private.parent = [parent[0]];
+              // console.dir(node._private.parent);
             }
             else {
-              node._private.parent.merge(parent[0]);
+              // node._private.parent.merge(parent[0]);
+              node._private.parent.push(parent[0]);
             }
 
             // let the core know we have a compound graph

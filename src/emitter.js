@@ -223,7 +223,12 @@ p.emit = p.trigger = function( events, extraParams, manualCallback ){
     } // for listener
 
     if( self.bubble( self.context ) && !eventObj.isPropagationStopped() ){
-      self.parent( self.context ).emit( eventObj, extraParams );
+      let m = self.parent( self.context );
+      if (Array.isArray(m)) {
+        self.parent(self.context).forEach(k => k.emit(eventObj, extraParams));
+      } else {
+        m.emit(eventObj, extraParams);
+      }
     }
   }, events );
 

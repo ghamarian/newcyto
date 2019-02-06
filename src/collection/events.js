@@ -36,7 +36,7 @@ let emitterOptions = {
     return true;
   },
   parent: function( ele ){
-    return ele.isChild() ? ele.parent() : ele.cy();
+    return ele.isChild() ? ele.parent() : [ele.cy()];
   }
 };
 

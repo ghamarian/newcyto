@@ -9,7 +9,10 @@ let elesfn = ({
     if( this.length === 1 ){
       let parent = this[0]._private.parent;
 
-      if( parent ){ return parent; }
+      if( parent ){ 
+        if (Array.isArray(parent)) return parent;
+        else return [parent];
+      }
     }
 
     for( let i = 0; i < this.length; i++ ){
@@ -21,24 +24,42 @@ let elesfn = ({
       }
     }
 
-    return this.spawn( parents, { unique: true } ).filter( selector );
+    return this.spawn( parents, { unique: true } ).filter( selector ).toArray();
   },
 
   parents: function( selector ){
     let parents = [];
 
     let eles = this.parent();
-    while( eles.nonempty() ){
+    let toexplore = [];
+    while( eles && eles.length > 0){
       for( let i = 0; i < eles.length; i++ ){
         let ele = eles[ i ];
         parents.push( ele );
+        toexplore = toexplore.concat(ele.parent());
       }
 
-      eles = eles.parent();
+      eles = toexplore;
+      toexplore = [];
     }
 
     return this.spawn( parents, { unique: true } ).filter( selector );
   },
+
+  // parents: function( selector ){
+  //   let parents = [];
+
+  //   let eles = this.parent();
+  //   while( eles.nonempty() ){
+  //     for( let i = 0; i < eles.length; i++ ){
+  //       let ele = eles[ i ];
+  //       parents.push( ele );
+  //     }
+  //     eles = eles.parent();
+  //   }
+
+  //   return this.spawn( parents, { unique: true } ).filter( selector );
+  // },
 
   commonAncestors: function( selector ){
     let ancestors;
@@ -194,9 +215,11 @@ function addParent( q, did, ele ){
   if( ele.isChild() ){
     let parent = ele._private.parent;
 
-    if( !did.has( parent.id() ) ){
-      q.push( parent );
-    }
+    parent.forEach(p => {
+      if (!did.has(p.id())) {
+        q.push(p);
+      }
+    });
   }
 }
 

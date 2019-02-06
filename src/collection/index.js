@@ -127,7 +127,8 @@ elesfn.spawn = function( cy, eles, opts ){
 
   // let flatten = cy.collection();
   let flatten = [];
-  if (eles && eles.length > 0 && eles[0].group() === 'nodes') {
+  // if (eles && eles.length > 0 && eles[0].group() === 'nodes') {
+  if (eles && eles.length > 0) {
     // eles.forEach(b => flatten.merge(b));
     eles = eles.reduce((acc, val) => acc.concat(val), []);
     // eles = eles.flat();
@@ -496,11 +497,10 @@ elesfn.restore = function( notifyRenderer = true, addToPool = true ){
           // non-existant parent; just remove it
           data.parent = undefined;
         } else {
-          parent = [parent];
           let selfAsParent = false;
-          let ancestor = parent;
-          while (!ancestor[0].empty()) {
-            if (node.same(ancestor)) {
+          let ancestor = [parent];
+          while (ancestor.length > 0) {
+            if (node.same(ancestor[0])) {
               // mark self as parent and remove from data
               selfAsParent = true;
               data.parent = undefined; // remove parent reference

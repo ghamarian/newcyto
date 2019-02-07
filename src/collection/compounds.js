@@ -194,8 +194,10 @@ function addParent( q, did, ele ){
   if( ele.isChild() ){
     let parent = ele._private.parent;
 
-    if( !did.has( parent.id() ) ){
-      q.push( parent );
+    for (let i = 0; i < parent.length; i++){
+      if( !did.has( parent[i].id() ) ){
+        q.push( parent[i]);
+      }
     }
   }
 }
